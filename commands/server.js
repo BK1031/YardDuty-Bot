@@ -8,7 +8,7 @@ module.exports = {
 	execute(message, args) {
         if (botconfig.maintenance) {
             message.channel.send(new Discord.RichEmbed()
-                .setTitle('Airpods SMP')
+                .setTitle('Funny SMP')
                 .setDescription('24.4.73.109')
                 .setColor('#ebde34')
                 .addField('Scheduled Maintenance', `Server will be back ${botconfig.maintenance_end}`)
@@ -22,7 +22,7 @@ module.exports = {
                 // Server is online
                 console.log('Server is online!');
                 message.channel.send(new Discord.RichEmbed()
-                    .setTitle('Airpods SMP')
+                    .setTitle('Funny SMP')
                     .setDescription('24.4.73.109')
                     .setColor('#42f477')
                     .addField('Version', body.version)
@@ -36,7 +36,7 @@ module.exports = {
             else {
                 console.log('Server not online!');
                 message.channel.send(new Discord.RichEmbed()
-                .setTitle('Airpods SMP')
+                .setTitle('Funny SMP')
                     .setDescription('24.4.73.109')
                     .setColor('#f44242')
                     .addField('Offline', `--------`)

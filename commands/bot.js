@@ -7,7 +7,7 @@ module.exports = {
 		message.channel.send(new Discord.RichEmbed()
 			.setAuthor('Yard Duty')
 			.setColor('#0099ff')
-			.setDescription('why am i')
+			.setDescription('i do be online')
 		);
 	},
 };
