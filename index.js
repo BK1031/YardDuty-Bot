@@ -14,7 +14,6 @@ for (const file of commandFiles) {
 
 client.on("ready", () => {
     console.log(`${client.user.username} is online!`);
-    
 });
 
 client.on("message", (message) => {
