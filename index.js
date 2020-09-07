@@ -1,9 +1,17 @@
 const botconfig = require("./botconfig.json");
 const Discord = require("discord.js");
 const fs = require('fs');
+const express = require('express')
+
+const app = express()
+const port = 3001
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+
+app.use(express.static('web'))
+
+app.listen(port, () => console.log(`Server listening at http://localhost:${port}`))
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -17,6 +25,11 @@ client.on("ready", () => {
 });
 
 client.on("message", (message) => {
+    if (message.content.includes("http") && (message.content.includes("tenor") || message.content.includes("gif") || message.content.includes("gip"))) message.delete(0)
+    message.attachments.forEach((attachmant) => {
+        console.log(attachmant.url);
+        if (attachmant.url.includes("gif")) message.delete(0);
+    });
     if (!message.content.startsWith(botconfig.dev_prefix + botconfig.prefix) || message.author.bot) return;
     // Parse user input
     const args = message.content.slice((botconfig.dev_prefix + botconfig.prefix).length).split(/ +/);
