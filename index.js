@@ -1,4 +1,5 @@
 const botconfig = require("./botconfig.json");
+const lab_codes = require("./lab_codes.json");
 const Discord = require("discord.js");
 const fs = require('fs');
 const express = require('express')
@@ -25,11 +26,36 @@ client.on("ready", () => {
 });
 
 client.on("message", (message) => {
-    if (message.content.includes("http") && (message.content.includes("tenor") || message.content.includes("gif") || message.content.includes("gip"))) message.delete(0)
-    message.attachments.forEach((attachmant) => {
-        console.log(attachmant.url);
-        if (attachmant.url.includes("gif")) message.delete(0);
-    });
+    // LAB CODE AREA
+    if (message.channel.id == 756292294503563285) {
+        // check code
+        if (lab_codes.codes.includes(message.content)) {
+            // FOUND A CODE!
+            console.log("FOUND THE CODE!");
+            let role = message.guild.roles.find(r => r.name === "Lab Card");
+            message.member.addRole(role);
+            // Send lab card to user
+            message.author.send("Welcome to the lab!");
+            // remove code from code list
+            const index = lab_codes.codes.indexOf(message.content);
+            if (index > -1) {
+                lab_codes.codes.splice(index, 1);
+            }
+            lab_codes.users.push({
+                "id": message.author.id,
+                "code": message.content
+            });
+            fs.writeFile("lab_codes.json", JSON.stringify(lab_codes), err => { 
+                if (err) throw err;
+                console.log("Done writing");
+            });
+        }
+        else {
+            console.log("Wrong code kekw");
+        }
+        message.delete(0);
+    }
+
     if (!message.content.startsWith(botconfig.dev_prefix + botconfig.prefix) || message.author.bot) return;
     // Parse user input
     const args = message.content.slice((botconfig.dev_prefix + botconfig.prefix).length).split(/ +/);
