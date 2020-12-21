@@ -3,6 +3,7 @@ const lab_codes = require("./lab_codes.json");
 const Discord = require("discord.js");
 const fs = require('fs');
 const express = require('express')
+const Canvas = require('canvas');
 
 const app = express()
 const port = 3001
@@ -25,7 +26,7 @@ client.on("ready", () => {
     console.log(`${client.user.username} is online!`);
 });
 
-client.on("message", (message) => {
+client.on("message", async (message) => {
     // LAB CODE AREA
     if (message.channel.id == 756292294503563285) {
         // check code
@@ -34,21 +35,40 @@ client.on("message", (message) => {
             console.log("FOUND THE CODE!");
             let role = message.guild.roles.find(r => r.name === "Lab Card");
             message.member.addRole(role);
+            
             // Send lab card to user
-            message.author.send("Welcome to the lab!");
+            const canvas = Canvas.createCanvas(1170, 701);
+            const ctx = canvas.getContext('2d');
+            const background = await Canvas.loadImage('./lab-card.png');
+            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+            // Pick up the pen
+            ctx.beginPath();
+            // Start the arc to form a circle
+            ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
+            // Put the pen down
+            ctx.closePath();
+            // Clip off the region you drew on
+            ctx.clip();
+
+            const avatar = await Canvas.loadImage(member.user.displayAvatarURL({ format: 'jpg' }));
+            ctx.drawImage(avatar, 25, 25, 200, 200);
+            const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'lab-card.png');
+
+            message.author.send(`Welcome to the server, ${message.author}!`, attachment);
+            
             // remove code from code list
             const index = lab_codes.codes.indexOf(message.content);
-            if (index > -1) {
-                lab_codes.codes.splice(index, 1);
-            }
-            lab_codes.users.push({
-                "id": message.author.id,
-                "code": message.content
-            });
-            fs.writeFile("lab_codes.json", JSON.stringify(lab_codes), err => { 
-                if (err) throw err;
-                console.log("Done writing");
-            });
+            // if (index > -1) {
+            //     lab_codes.codes.splice(index, 1);
+            // }
+            // lab_codes.users.push({
+            //     "id": message.author.id,
+            //     "code": message.content
+            // });
+            // fs.writeFile("lab_codes.json", JSON.stringify(lab_codes), err => { 
+            //     if (err) throw err;
+            //     console.log("Done writing");
+            // });
         }
         else {
             console.log("Wrong code kekw");
