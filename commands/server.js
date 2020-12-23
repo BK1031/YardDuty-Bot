@@ -54,7 +54,7 @@ module.exports = {
                         .addField('Version', body.version)
                         .addField('Online', `${body.players.online}/${body.players.max}`)
                         .addField('Players', body.players.list)
-                        .setFooter(body.software)
+                        .setFooter('CurseForge FTBRevelation-3.1.0-1.12.2')
                         .setTimestamp()
                     );
                 }
