@@ -17,7 +17,7 @@ module.exports = {
             return;
         }
         else {
-            request('https://api.mcsrvstat.us/2/24.4.73.109', {json:true}, (err, res, body) => {
+            request('https://api.mcsrvstat.us/2/mc.bk1031.dev', {json:true}, (err, res, body) => {
                 if (body.online) {
                     // Server is online
                     console.log('Server is online!');
@@ -43,26 +43,26 @@ module.exports = {
                     );
                 }
             });
-            request('https://api.mcsrvstat.us/2/ftb.bk1031.dev', {json:true}, (err, res, body) => {
+            request('https://api.mcsrvstat.us/2/pixelmon.bk1031.dev', {json:true}, (err, res, body) => {
                 if (body.online) {
                     // Server is online
                     console.log('Server is online!');
                     message.channel.send(new Discord.RichEmbed()
-                        .setTitle('FTB Revelation SMP')
-                        .setDescription('ftb.bk1031.dev')
+                        .setTitle('Pixelmon SMP')
+                        .setDescription('pixelmon.bk1031.dev')
                         .setColor('#42f477')
                         .addField('Version', body.version)
                         .addField('Online', `${body.players.online}/${body.players.max}`)
                         .addField('Players', body.players.list)
-                        .setFooter('CurseForge FTBRevelation-3.1.0-1.12.2')
+                        .setFooter('CurseForge Pixelmon-8.1.2-1.12.2')
                         .setTimestamp()
                     );
                 }
                 else {
                     console.log('Server not online!');
                     message.channel.send(new Discord.RichEmbed()
-                        .setTitle('FTB Revelation SMP')
-                        .setDescription('ftb.bk1031.dev')
+                        .setTitle('Pixelmon SMP')
+                        .setDescription('pixelmon.bk1031.dev')
                         .setColor('#f44242')
                         .addField('Offline', `--------`)
                         .setTimestamp()
