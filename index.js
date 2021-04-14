@@ -1,9 +1,20 @@
 const botconfig = require("./botconfig.json");
-const lab_codes = require("./lab_codes.json");
 const Discord = require("discord.js");
 const fs = require('fs');
 const express = require('express')
 const Canvas = require('canvas');
+const path = require('path');
+
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://bk1031-lab-default-rtdb.firebaseio.com"
+});
+
+var db = admin.database();
 
 const app = express()
 const port = 3001
@@ -27,53 +38,9 @@ client.on("ready", () => {
 });
 
 client.on("message", async (message) => {
-    // LAB CODE AREA
     if (message.channel.id == 756292294503563285) {
-        // check code
-        if (lab_codes.codes.includes(message.content)) {
-            // FOUND A CODE!
-            console.log("FOUND THE CODE!");
-            let role = message.guild.roles.find(r => r.name === "Lab Card");
-            message.member.addRole(role);
-            
-            // Send lab card to user
-            const canvas = Canvas.createCanvas(1170, 701);
-            const ctx = canvas.getContext('2d');
-            const background = await Canvas.loadImage('./lab-card.png');
-            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-            // Pick up the pen
-            ctx.beginPath();
-            // Start the arc to form a circle
-            ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
-            // Put the pen down
-            ctx.closePath();
-            // Clip off the region you drew on
-            ctx.clip();
-
-            const avatar = await Canvas.loadImage(member.user.displayAvatarURL({ format: 'jpg' }));
-            ctx.drawImage(avatar, 25, 25, 200, 200);
-            const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'lab-card.png');
-
-            message.author.send(`Welcome to the server, ${message.author}!`, attachment);
-            
-            // remove code from code list
-            const index = lab_codes.codes.indexOf(message.content);
-            // if (index > -1) {
-            //     lab_codes.codes.splice(index, 1);
-            // }
-            // lab_codes.users.push({
-            //     "id": message.author.id,
-            //     "code": message.content
-            // });
-            // fs.writeFile("lab_codes.json", JSON.stringify(lab_codes), err => { 
-            //     if (err) throw err;
-            //     console.log("Done writing");
-            // });
-        }
-        else {
-            console.log("Wrong code kekw");
-        }
-        message.delete(0);
+        checkLabCard(message).catch(e => {console.log(e)});
+        message.delete({timeout: 1});
     }
 
     if (!message.content.startsWith(botconfig.dev_prefix + botconfig.prefix) || message.author.bot) return;
@@ -93,8 +60,83 @@ client.on("message", async (message) => {
     }
     client.commands.get(command).execute(message, args);
     if (botconfig.dev_prefix != "") {
-        message.channel.send(new Discord.RichEmbed().setFooter('NOTE: This is a Dev Command. Some things may be broken.'));
+        message.channel.send(new Discord.MessageEmbed().setFooter('NOTE: This is a Dev Command. Some things may be broken.'));
     }
 });
 
 client.login(botconfig.token);
+
+async function checkLabCard(message) {
+    db.ref("lab_codes").child(message.content).once("value", async function(snapshot) {
+        if (snapshot.val() != null) {
+            db.ref("users").child(message.author.id).child("lab_code").set(message.content);
+            db.ref("lab_codes").child(message.content).remove();
+            message.author.send(`Hello, ${message.author.username}.\n`);
+            setTimeout(() => {
+                message.author.send(`Congratulations on finding a lab code, and welcome to the BK1031 Laboratory!`);
+                setTimeout(async () => {
+                    message.author.send(`Here is your lab card, keep it safe.`);
+                    // Create a canvas and access the 2d context
+                    const canvas = Canvas.createCanvas(1170, 701);
+                    const ctx = canvas.getContext('2d');
+                    // Load the background image and draw it to the canvas
+                    const background = await Canvas.loadImage(
+                        path.join(__dirname, './lab-card.png')
+                    );
+                    let x = 0;
+                    let y = 0;
+                    ctx.drawImage(background, x, y);
+                    // Display lab code
+                    Canvas.registerFont('./fonts/DINCondensed-Bold.ttf', { family: 'DIN Condensed' })
+                    ctx.fillStyle = '#ffffff'
+                    ctx.font = '55px DIN Condensed'
+                    let codeText = `LAB ID: ${message.content}`;
+                    x = 95
+                    y = 300
+                    ctx.fillText(codeText, x, y)
+                    // Display user text
+                    Canvas.registerFont('./fonts/DINCondensed-Bold.ttf', { family: 'DIN Condensed' })
+                    ctx.fillStyle = '#ffffff';
+                    if (message.author.username.length > 13) {
+                        ctx.font = '75px DIN Condensed';
+                    } else {
+                        ctx.font = '130px DIN Condensed';
+                    }
+                    let nameText = `${message.author.username}`;
+                    x = 95
+                    y = 530
+                    ctx.fillText(nameText, x, y)
+                    //create a circular "mask"
+                    ctx.beginPath();
+                    ctx.arc(canvas.width - 450 + 175, canvas.height / 2 + 50, 175, 0, Math.PI * 2, true);
+                    ctx.closePath();
+                    ctx.clip();
+                    // Draw profile picture
+                    const pfp = await Canvas.loadImage(
+                        message.author.displayAvatarURL({
+                            format: 'png',
+                            size: 512
+                        })
+                    )
+                    x = canvas.width - 450;
+                    y = canvas.height * (1/2) + 50 - 175;
+                    ctx.drawImage(pfp, x, y, 350, 350)
+                    // Attach the image to a message and send it
+                    const attachment = new Discord.MessageAttachment(canvas.toBuffer());
+                    message.author.send('', attachment);
+                    client.channels.cache.get('832006575845015552').send('', attachment);
+                    setTimeout(() => {
+                        message.author.send('Your account has been linked with the Lab ID: `' + message.content + '`. Keep this Lab ID secure, as you will use it to authenticate yourself throughout the lab.');
+                        setTimeout(() => {
+                            message.author.send(`Don't forget to read and follow the lab <#831996761237094420>. Enjoy your stay, and happy researching!`);
+                            message.member.roles.add(message.member.guild.roles.cache.find(role => role.name === "Lab Card"))
+                        }, 3000);
+                    }, 3000);
+                }, 3000);
+            }, 3000);
+        }
+        else {
+            db.ref("users").child(message.author.id).child("failed_codes").child(message.content).set(message.content);
+        }
+    });
+}

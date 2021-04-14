@@ -10,6 +10,9 @@ module.exports = {
             message.delete();
             message.channel.send(args.join(" "));
         }
+        else {
+            message.reply("You do not have permission to do that!")
+        }
         return;
 	},
 };

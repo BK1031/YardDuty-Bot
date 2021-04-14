@@ -1,75 +1,10 @@
 const Discord = require('discord.js');
-const request = require('request');
 const botconfig = require("../botconfig.json");
 
 module.exports = {
 	name: 'server',
-	description: 'Get Airpods SMP server status',
+	description: 'Get SMP server status',
 	execute(message, args) {
-        if (botconfig.maintenance) {
-            message.channel.send(new Discord.RichEmbed()
-                .setTitle('BK1031 SMP')
-                .setDescription('mc.bk1031.dev')
-                .setColor('#ebde34')
-                .addField('Scheduled Maintenance', `Server will be back ${botconfig.maintenance_end}`)
-                .setTimestamp()
-            );
-            return;
-        }
-        else {
-            request('https://api.mcsrvstat.us/2/mc.bk1031.dev', {json:true}, (err, res, body) => {
-                if (body.online) {
-                    // Server is online
-                    console.log('Server is online!');
-                    message.channel.send(new Discord.RichEmbed()
-                        .setTitle('Vanilla SMP')
-                        .setDescription('mc.bk1031.dev')
-                        .setColor('#42f477')
-                        .addField('Version', body.version)
-                        .addField('Online', `${body.players.online}/${body.players.max}`)
-                        .addField('Players', body.players.list)
-                        .setFooter(body.software)
-                        .setTimestamp()
-                    );
-                }
-                else {
-                    console.log('Server not online!');
-                    message.channel.send(new Discord.RichEmbed()
-                        .setTitle('Vanilla SMP')
-                        .setDescription('mc.bk1031.dev')
-                        .setColor('#f44242')
-                        .addField('Offline', `--------`)
-                        .setTimestamp()
-                    );
-                }
-            });
-            request('https://api.mcsrvstat.us/2/pixelmon.bk1031.dev', {json:true}, (err, res, body) => {
-                if (body.online) {
-                    // Server is online
-                    console.log('Server is online!');
-                    message.channel.send(new Discord.RichEmbed()
-                        .setTitle('Pixelmon SMP')
-                        .setDescription('pixelmon.bk1031.dev')
-                        .setColor('#42f477')
-                        .addField('Version', body.version)
-                        .addField('Online', `${body.players.online}/${body.players.max}`)
-                        .addField('Players', body.players.list)
-                        .setFooter('CurseForge Pixelmon-8.1.2-1.12.2')
-                        .setTimestamp()
-                    );
-                }
-                else {
-                    console.log('Server not online!');
-                    message.channel.send(new Discord.RichEmbed()
-                        .setTitle('Pixelmon SMP')
-                        .setDescription('pixelmon.bk1031.dev')
-                        .setColor('#f44242')
-                        .addField('Offline', `--------`)
-                        .setTimestamp()
-                    );
-                }
-            });
-            return;
-        }
+        message.channel.send("We do not have a minecraft server currently running! If you would like to see one, please leave a comment in <#744105753387991040>");
 	},
 };

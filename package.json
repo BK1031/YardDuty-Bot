@@ -9,9 +9,10 @@
   "author": "Bharat Kathi <bharat1031@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "canvas": "^2.6.1",
-    "discord.js": "11.5.0",
+    "axios": "^0.21.1",
+    "canvas": "^2.7.0",
+    "discord.js": "^12.5.3",
     "express": "^4.17.1",
-    "request": "2.88.0"
+    "firebase-admin": "^9.6.0"
   }
 }

@@ -1,5 +1,4 @@
-const Discord = require('discord.js');
-const request = require('request');
+const Discord = require('discord.js')
 const botconfig = require("../botconfig.json");
 
 module.exports = {
