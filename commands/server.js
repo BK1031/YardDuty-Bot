@@ -9,7 +9,7 @@ module.exports = {
                 if (body.online) {
                     // Server is online
                     console.log('Server is online!');
-                    message.channel.send(new Discord.RichEmbed()
+                    message.channel.send(new Discord.MessageEmbed()
                         .setTitle('Vanilla SMP')
                         .setDescription('mc.bk1031.dev')
                         .setColor('#42f477')
@@ -22,7 +22,7 @@ module.exports = {
                 }
                 else {
                     console.log('Server not online!');
-                    message.channel.send(new Discord.RichEmbed()
+                    message.channel.send(new Discord.MessageEmbed()
                         .setTitle('Vanilla SMP')
                         .setDescription('mc.bk1031.dev')
                         .setColor('#f44242')
