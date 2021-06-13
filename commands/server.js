@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const request = require('request');
 const botconfig = require("../botconfig.json");
 
 module.exports = {
